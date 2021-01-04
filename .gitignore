@@ -1,0 +1,11 @@
+# folders/files
+/debug.log
+/data/
+/reports/cleaning_notes.ipynb
+
+# pycache
+__pycache__
+/__pycache__
+
+# Jupyter Notebook
+.ipynb_checkpoints
