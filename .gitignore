@@ -2,6 +2,7 @@
 /debug.log
 /data/
 /reports/cleaning_notes.ipynb
+/config/chromedriver.json
 
 # pycache
 __pycache__

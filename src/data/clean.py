@@ -26,6 +26,14 @@ def first_num(x):
                 num = int(x[:-1]) + unicodedata.numeric(x[-1])
     return num
 
+def create_blog(link):
+    if 'bakerchick' in link:
+        return 'The Baker Chick'
+    if 'sally' in link:
+        return "Sally's Baking Addiction"
+    if 'bakingbites' in link:
+        return 'Baking Bites'
+
 def convert_flour_sugar(line):
     """
     Converts flour and sugar ingredient lines to a number (in cups)
@@ -219,6 +227,7 @@ def clean_data():
     in_file = '././data/recipes.csv'
     out_file = '././data/recipes_clean.csv'
     data_dct = {}
+    non_ingredient_columns = ['link','blog','type']
 
     # read in data, drop nulls, and lowercase strings
     df_org = pd.read_csv(in_file)
@@ -233,8 +242,11 @@ def clean_data():
     df_onehot = pd.concat([df.iloc[:,:2], df['ingredients'].apply(one_hot)], axis=1)
     data_dct['onehot'] = df_onehot
 
+    # create column for blog
+    df_onehot = df_onehot.assign(blog=df_onehot['link'].apply(create_blog))
+
     # clean one hot dataframe
-    df_clean = df_onehot[['link','type']]
+    df_clean = df_onehot[non_ingredient_columns]
     df_clean = df_clean.assign(**{'Flour (cups)':df_onehot['flour'].apply(convert_flour_sugar)})
     df_clean = df_clean.assign(**{'Sugar (cups)':df_onehot['sugar'].apply(convert_flour_sugar)})
     df_clean = df_clean.assign(**{'Eggs':df_onehot['egg'].apply(convert_egg)})
@@ -248,9 +260,10 @@ def clean_data():
     data_dct['cups'] = df_cups
 
     # convert values to percentage amounts
-    df_percent = pd.concat([df_clean.iloc[:,:2], df_cups.iloc[:,2:].apply(lambda x:x/x.sum()*100,axis=1)],axis=1)
-    df_percent.columns = ['link','type'] + [x[:x.find('(')] + '(%)' for x in df_percent.columns if '(' in x]
+    df_percent = pd.concat([df_clean.iloc[:,:3], df_cups.iloc[:,3:].apply(lambda x:x/x.sum()*100,axis=1)],axis=1)
+    df_percent.columns = non_ingredient_columns + [x[:x.find('(')] + '(%)' for x in df_percent.columns if '(' in x]
     data_dct['percent'] = df_percent
+
 
     # write to csv
     df_percent.to_csv(out_file, index=False)
