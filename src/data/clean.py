@@ -68,6 +68,14 @@ def convert_flour_sugar(line):
     num = first_num(x)
     return num
 
+def convert_sugar(lst):
+    if type(lst) != list:
+        return 0
+    tot = 0
+    for l in lst:
+        tot += convert_flour_sugar(l)
+    return tot
+
 def convert_egg(line):
     """
     Converts egg ingredient lines to a number
@@ -181,18 +189,21 @@ def has_ingredient(lst, ing):
     return False
 
 def one_hot(lst):
-    """
-    Takes in list of ingredients and output series of the 6 main ingredients
-    """
     dct = {}
     butter = 0
+    sugar = 0
     for x in lst:
         if 'frosting' in x:
             break
         if 'flour' in x and 'flour' not in dct.keys():
             dct['flour'] = x
-        if 'sugar' in x and 'sugar' not in dct.keys():
-            dct['sugar'] = x
+        if ('sugar' in x or 'honey' in x or 'syrup' in x or 'agave' in x):
+            if 'sugar' not in dct.keys():
+                if 'sugar' in x:
+                    sugar = 1
+                dct['sugar'] = [x]
+            elif 'sugar' in dct.keys() and sugar ==0 and len(dct['sugar'])==1:
+                dct['sugar'].append(x)
         if 'egg' in x and 'egg' not in dct.keys():
             dct['egg'] = x
         if ('baking powder' in x or 'baking soda' in x):
@@ -248,7 +259,7 @@ def clean_data():
     # clean one hot dataframe
     df_clean = df_onehot[non_ingredient_columns]
     df_clean = df_clean.assign(**{'Flour (cups)':df_onehot['flour'].apply(convert_flour_sugar)})
-    df_clean = df_clean.assign(**{'Sugar (cups)':df_onehot['sugar'].apply(convert_flour_sugar)})
+    df_clean = df_clean.assign(**{'Sugar (cups)':df_onehot['sugar'].apply(convert_sugar)})
     df_clean = df_clean.assign(**{'Eggs':df_onehot['egg'].apply(convert_egg)})
     df_clean = df_clean.assign(**{'Vanilla (tsp)':df_onehot['vanilla'].apply(convert_van)})
     df_clean = df_clean.assign(**{'Baking Powder (tsp)':df_onehot['baking powder/soda'].apply(convert_bpbs)})
