@@ -12,14 +12,14 @@ The `/src` folder contains subfolders `data`, `utils`, and `models`.
 
 In the `/src/data` folder:
 - `scrape.py`: the web-scraping script that writes data files into `/data` folder. It outputs pickle files in the format `<baking blog abbreviation>_<cupcake or muffin>.pickle`, which contain the individual links to each recipe. Also outputted is `recipes.csv`, which is a data file containing columns `link`,  `type` (cupcake or muffin), and `ingredients` (list of ingredients scraped).
-- `clean.py`: contains functions that cleans data, as described in `reports/clean.md`. It outputs `recipes_clean.csv` to the data folder
+- `remove.py`: contains functions that cleans data, as described in `reports/clean.md`. It outputs `recipes_clean.csv` to the data folder
 
 In the `src/utils` folder:
 - `clean.py`: contains function `remove_data` that implements the standard target `clean`
 
 In the `src/models` folder:
 - `knn.py`: contains implementation of the k nearest neighbor algorithm
-- `mlp.py`: contains implementation of multilayer perception classifier
+- `mlp.py`: contains implementation of multilayer perception classifier. After training MLP, the best model parameters are saved into `/results/model.pt`. 
 
 #### Reports
 The `/reports` folder contains:
@@ -39,6 +39,6 @@ Note: To run the webscraping, this assumes that there is a file `/config/chromed
 }
 ```
 
-Standard target `clean` is also implemented, and it will delete the `/data` folder.
+Standard target `clean` is also implemented, and it will delete the `/data` and `/results` folder.
 
 After running the data gathering and preprocessing, `/reports/analysis.ipynb` can be run to replicate model results.
