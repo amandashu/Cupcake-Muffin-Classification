@@ -1,6 +1,8 @@
 ## Cupcake Muffin Classification
 Scraping, cleaning, and classifying cupcake and muffin recipes. This project is inspired by this [SVM tutorial](https://www.youtube.com/watch?v=N1vOgolbjSc&feature=youtu.be).
 
+Cupcakes and muffins may seem similar, but by comparing the ingredients of muffins and cupcakes from many online recipes, the data suggests otherwise.
+
 ## Data
 The data is scraped from baking blogs [Baking Bites](https://bakingbites.com/), [Sally's Baking Addition](https://sallysbakingaddiction.com/), and [The Baker Chick](https://www.thebakerchick.com/). See [here](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/reports/clean.md) for details on data preparation.
 
@@ -9,7 +11,7 @@ The data is scraped from baking blogs [Baking Bites](https://bakingbites.com/), 
 The `/src` folder contains subfolders `data`, `utils`, and `models`.
 
 In the `/src/data` folder:
-- `scrape.py`: the web-scraping script that writes data files into `/data` folder. It outputs pickle files in the format `<baking blog abbreviation>_<cupcake or muffin>.pickle`, which contain the individual links to each recipe. Also outputted is `recipes.csv`, which is a data file containing columns `link`, `blog`, `type` (cupcake or muffin), and `ingredients` (list of ingredients scraped).
+- `scrape.py`: the web-scraping script that writes data files into `/data` folder. It outputs pickle files in the format `<baking blog abbreviation>_<cupcake or muffin>.pickle`, which contain the individual links to each recipe. Also outputted is `recipes.csv`, which is a data file containing columns `link`,  `type` (cupcake or muffin), and `ingredients` (list of ingredients scraped).
 - `clean.py`: contains functions that cleans data, as described in `reports/clean.md`. It outputs `recipes_clean.csv` to the data folder
 
 In the `src/utils` folder:

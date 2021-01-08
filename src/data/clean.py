@@ -259,11 +259,11 @@ def clean_data():
     # clean one hot dataframe
     df_clean = df_onehot[non_ingredient_columns]
     df_clean = df_clean.assign(**{'Flour (cups)':df_onehot['flour'].apply(convert_flour_sugar)})
+    df_clean = df_clean.assign(**{'Baking Powder (tsp)':df_onehot['baking powder/soda'].apply(convert_bpbs)})
+    df_clean = df_clean.assign(**{'Butter (cups)':df_onehot['butter/oil'].apply(convert_bo)})
     df_clean = df_clean.assign(**{'Sugar (cups)':df_onehot['sugar'].apply(convert_sugar)})
     df_clean = df_clean.assign(**{'Eggs':df_onehot['egg'].apply(convert_egg)})
     df_clean = df_clean.assign(**{'Vanilla (tsp)':df_onehot['vanilla'].apply(convert_van)})
-    df_clean = df_clean.assign(**{'Baking Powder (tsp)':df_onehot['baking powder/soda'].apply(convert_bpbs)})
-    df_clean = df_clean.assign(**{'Butter (cups)':df_onehot['butter/oil'].apply(convert_bo)})
     data_dct['clean'] = df_clean
 
     # convert eggs, vanilla, baking powder values to cups
