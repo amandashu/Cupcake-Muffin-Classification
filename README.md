@@ -1,7 +1,7 @@
 ## Cupcake Muffin Classification
 Scraping, cleaning, and classifying cupcake and muffin recipes. This project is inspired by this [SVM tutorial](https://www.youtube.com/watch?v=N1vOgolbjSc&feature=youtu.be).
 
-Cupcakes and muffins may seem similar, but by comparing the ingredients of muffins and cupcakes from many online recipes, the data suggests otherwise. See [here](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/reports/analysis.ipynb) for analysis Jupyter notebook.
+Cupcakes and muffins may seem similar, but by comparing the ingredients of muffins and cupcakes from many online recipes, the data suggests otherwise. See [here](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/reports/analysis.ipynb) for analysis in a Jupyter notebook.
 
 ## Data
 The data is scraped from baking blogs [Baking Bites](https://bakingbites.com/), [Sally's Baking Addition](https://sallysbakingaddiction.com/), and [The Baker Chick](https://www.thebakerchick.com/). See [here](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/reports/clean.md) for details on data preparation.

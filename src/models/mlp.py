@@ -18,14 +18,14 @@ mlp_results_path = '../../results/model.pt'
 mlp_input_size = 6
 mlp_output_size = 2
 mlp_hidden_size1 = 8
-num_iter = 700
+num_epochs = 700
 learning_rate = 0.0005
 batch_size = 30
 
 class MLP(nn.Module):
     def __init__(self):
         """
-        A fully connection multilayer perceptron model with one hidden layer
+        A multilayer perceptron model with one hidden layer
         """
         super(MLP, self).__init__()
         self.fc1 = nn.Linear(mlp_input_size, mlp_hidden_size1)
@@ -62,23 +62,33 @@ def read_data(X_train, y_train, X_test, y_test):
 
 
 def train_mlp(train_loader, val_loader):
+    """
+    Trains the mlp model, calculates the average training and validation loss at
+    each epochs,and returns the model parameters with the best validation loss to
+    a pickle file
+    """
+    # create results folder if not yet exists
     dirname = '../../results'
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
+    # setup for training/validation losses
     avg_train_loss = []
     avg_val_loss = []
     best_val_score = float('inf')
+
     net = MLP()
 
+    # initialize loss function and optimizer
     loss_function = nn.CrossEntropyLoss(reduction='sum')
     optimizer = torch.optim.SGD(net.parameters(),lr=learning_rate)
 
     i = 0
-    while i < num_iter:
+    while i < num_epochs:
         train_loss_list = []
         val_loss_list = []
 
+        # for each training batch, update paramters
         for k, (images, labels) in enumerate(train_loader):
             optimizer.zero_grad()
             outputs = net(images)
@@ -87,6 +97,7 @@ def train_mlp(train_loader, val_loader):
             loss.backward()
             optimizer.step()
 
+        # calculate training and validation losses
         with torch.no_grad():
             for k, (images, labels) in enumerate(val_loader):
                 outputs = net(images)
@@ -100,20 +111,21 @@ def train_mlp(train_loader, val_loader):
 
                 train_loss_list.append(loss.item())
 
+        # calculate average training/validation loss
         avg_train = sum(train_loss_list)/len(train_loss_list)
         avg_val = sum(val_loss_list)/len(val_loss_list)
-
         avg_train_loss.append(avg_train)
         avg_val_loss.append(avg_val)
 
+        # save best model so far
         if avg_val < best_val_score:
             best_val_score = avg_val
             torch.save(net.state_dict(), mlp_results_path)
         i += 1
 
+    # return best model
     net = MLP()
     net.load_state_dict(torch.load(mlp_results_path))
-
     return net, avg_train_loss, avg_val_loss
 
 def get_accuracy(loader, net):
@@ -135,8 +147,11 @@ def run_mlp(X_train, y_train, X_test, y_test):
     Takes in training/testing data, trains mlp, prints accuracy score, plot t_losses
     during training.
     """
+    # train model
     train_loader, val_loader, test_loader = read_data(X_train, y_train, X_test, y_test)
     net, t_losses, v_losses = train_mlp(train_loader,val_loader)
+
+    # accuracy
     accuracy = get_accuracy(test_loader, net)
     print("Test accuracy: {}".format(accuracy))
 

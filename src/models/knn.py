@@ -11,9 +11,11 @@ def helper_knn(series, training, k=5):
     mode = training.iloc[indexes,-1].mode()
     return mode
 
-def knn(training, testing):
+def knn(X_train, y_train, X_test):
     """
     Runs KNN and returns predictions
     """
+    training = pd.concat([X_train,y_train],axis=1).reset_index(drop=True)
+    testing = X_test.reset_index(drop=True)
     predictions = testing.apply(helper_knn, axis=1, args=(training,))
     return predictions

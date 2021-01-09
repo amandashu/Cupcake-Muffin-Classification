@@ -151,6 +151,7 @@ def scrape_data(chromedriver_path):
     """
     Writes data to csv
     """
+    # links to scrape
     start_links = {
                     'sba_muffins': 'https://sallysbakingaddiction.com/recipes/?fwp_breakfast_category=muffins',
                     'sba_cupcakes': 'https://sallysbakingaddiction.com/recipes/?fwp_desserts_category=cupcakes',
@@ -160,19 +161,21 @@ def scrape_data(chromedriver_path):
                     'bc_cupcakes': 'https://www.thebakerchick.com/category/recipes/cupcakes/'
                     }
 
+    # dct with blog abbreviation as key and list of functions as values
     func_dct = {
                 'sba': [sba_get_links, sba_get_data],
                 'bb': [bb_get_links, bb_get_data],
                 'bc': [bc_get_links, bc_get_data]
                 }
 
-    driver = webdriver.Chrome(chromedriver_path)
+    # set up file paths and data folder
     csv_path = 'data/recipes.csv'
-
     dirname = 'data'
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
+    # loop through all links, scrape, and dump list of recipe links into pickle files
+    driver = webdriver.Chrome(chromedriver_path)
     for item, val in start_links.items():
         pickle_path = 'data/' + item + '.pickle'
         web_abb = item[:item.find('_')]
@@ -181,22 +184,24 @@ def scrape_data(chromedriver_path):
             with open(pickle_path , 'wb') as f:
                 pickle.dump(recipe_links, f)
 
+    # loop through every recipe link, scrape, write data to csv
     all_pickles = [dirname +  '/' + filename for filename in os.listdir(dirname) if filename.endswith('pickle')]
-
     for p in all_pickles:
+        # get blog abbreviation
         web_abb = p[p.find('/')+1:p.find('_')]
 
+        # load list of recipe links to scrape
         with open(p, 'rb') as file:
             links = pickle.load(file)
 
-        #write data
+        # set up wriing to csv file
         headers = ['link', 'type', 'ingredients']
-
         if not os.path.isfile(csv_path):
             with open(csv_path, 'w', newline='') as f:
                 writer = csv.DictWriter(f, headers)
                 writer.writerow({x:x for x in headers})
 
+        # get type value
         if 'muffin' in p:
             type = 'muffin'
         elif 'cupcake' in p:
@@ -205,7 +210,7 @@ def scrape_data(chromedriver_path):
         with open(csv_path, 'a', newline='', encoding='UTF-8') as f:
             writer = csv.DictWriter(f, headers)
 
-            #go through each link and write data to csv
+            # go through each link and write data to csv
             for l in links:
                 print(l)
                 try:

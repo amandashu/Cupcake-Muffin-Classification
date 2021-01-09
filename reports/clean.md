@@ -1,5 +1,5 @@
 ## Data Collection
-The data is scraped from baking blogs [Baking Bites](https://bakingbites.com/), [Sally's Baking Addition](https://sallysbakingaddiction.com/), and [The Baker Chick](https://www.thebakerchick.com/), implemented in `/src/data/scrape.py`. It scrapes both cupcake and muffin recipes from these sites into `/data/recipes.csv`, which is a csv file containing columns `link`, `type` (cupcake or muffin), and `ingredients` (list of each ingredient line). When possible, only the main part of the recipe is scraped (i.e. the cake portion of cupcakes and not the frosting).
+The data is scraped from baking blogs [Baking Bites](https://bakingbites.com/), [Sally's Baking Addition](https://sallysbakingaddiction.com/), and [The Baker Chick](https://www.thebakerchick.com/), implemented in this [file](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/src/data/scrape.py). It scrapes both cupcake and muffin recipes from these sites into `/data/recipes.csv`, which is a csv file containing columns `link`, `type` (cupcake or muffin), and `ingredients` (list of each ingredient line). When possible, only the main part of the recipe is scraped (i.e. the cake portion of cupcakes and not the frosting).
 
 Example row of scraped data:
 

@@ -27,6 +27,9 @@ def first_num(x):
     return num
 
 def create_blog(link):
+    """
+    Helper function to identify blog name from link
+    """
     if 'bakerchick' in link:
         return 'The Baker Chick'
     if 'sally' in link:
@@ -69,6 +72,9 @@ def convert_flour_sugar(line):
     return num
 
 def convert_sugar(lst):
+    """
+    Loops through list and returns total sugar amount in cups
+    """
     if type(lst) != list:
         return 0
     tot = 0
@@ -189,6 +195,9 @@ def has_ingredient(lst, ing):
     return False
 
 def one_hot(lst):
+    """
+    Takes in list of ingredients and returns series with the 6 ingredients
+    """
     dct = {}
     butter = 0
     sugar = 0
@@ -235,6 +244,9 @@ def to_cups(df):
                               'Baking Powder (tsp)': 'Baking Powder (cups)'})
 
 def clean_data():
+    """
+    Cleans scraped data to dataframe with percent of ingredients for each recipe
+    """
     in_file = '././data/recipes.csv'
     out_file = '././data/recipes_clean.csv'
     data_dct = {}
