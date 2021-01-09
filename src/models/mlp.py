@@ -1,12 +1,14 @@
+"""
+Code modified from CSE151A course assignment.
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data as utils
 import numpy as np
 from matplotlib import pyplot as plt
-
 from sklearn.model_selection import train_test_split
-
 import os
 
 torch.manual_seed(0)
@@ -15,60 +17,51 @@ np.random.seed(0)
 mlp_results_path = '../../results/model.pt'
 mlp_input_size = 6
 mlp_output_size = 2
-
-# 0.7647
-# mlp_hidden_size1 = 10
-# mlp_hidden_size2 = 6
-# num_iter = 200
-# learning_rate = 0.002
-# batch_size = 20
-
-# 0.794
 mlp_hidden_size1 = 8
 num_iter = 700
 learning_rate = 0.0005
 batch_size = 30
 
-
-class BaselineMLP(nn.Module):
+class MLP(nn.Module):
     def __init__(self):
         """
-        A multilayer perceptron model
-        Consists of one hidden layer and 1 output layer (all fully connected)
+        A fully connection multilayer perceptron model with one hidden layer
         """
-        super(BaselineMLP, self).__init__()
+        super(MLP, self).__init__()
         self.fc1 = nn.Linear(mlp_input_size, mlp_hidden_size1)
         self.fc2 = nn.Linear(mlp_hidden_size1, mlp_output_size)
-        # self.fc3 = nn.Linear(mlp_hidden_size2, mlp_output_size)
 
     def forward(self, X):
         """
-        Pass the batch of images through each layer of the network, applying
-        logistic activation function after hidden layer.
+        Uses logistic activation function after hidden layer.
         """
-        ### two hidden layers ###
         out = self.fc1(X)
         out = torch.sigmoid(out)
         out = self.fc2(out)
-        # out = torch.sigmoid(out)
-        # out = self.fc3(out)
         return out
 
+def convert_tensor(pd_df):
+    """
+    Froms pandas dataframe/series to torch tensor
+    """
+    return torch.tensor(pd_df.to_numpy().astype(np.float32))
+
 def read_data(X_train, y_train, X_test, y_test):
+    """
+    Takes in training/testing data. Training is further split to training and
+    validation. Returns data loaders for training, validation, and testing.
+    """
     X_smalltrain, X_val, y_smalltrain, y_val = train_test_split(X_train, y_train, test_size=0.3, random_state=234)
-    training = utils.TensorDataset(torch.tensor(X_smalltrain.to_numpy().astype(np.float32)),
-                                                torch.tensor(y_smalltrain.to_numpy().astype(np.float32)).long())
-    validation = utils.TensorDataset(torch.tensor(X_val.to_numpy().astype(np.float32)),
-                                                torch.tensor(y_val.to_numpy().astype(np.float32)).long())
-    testing = utils.TensorDataset(torch.tensor(X_test.to_numpy().astype(np.float32)),
-                                                torch.tensor(y_test.to_numpy().astype(np.float32)).long())
+    training = utils.TensorDataset(convert_tensor(X_smalltrain), convert_tensor(y_smalltrain).long())
+    validation = utils.TensorDataset(convert_tensor(X_val), convert_tensor(y_val).long())
+    testing = utils.TensorDataset(convert_tensor(X_test), convert_tensor(y_test).long())
     train_dataloader = utils.DataLoader(training, batch_size=batch_size, shuffle=True)
     val_dataloader = utils.DataLoader(validation, batch_size=batch_size, shuffle=True)
     test_dataloader = utils.DataLoader(testing, batch_size=batch_size, shuffle=True)
     return train_dataloader, val_dataloader, test_dataloader
 
 
-def trainMLP(train_loader, val_loader):
+def train_mlp(train_loader, val_loader):
     dirname = '../../results'
     if not os.path.exists(dirname):
         os.makedirs(dirname)
@@ -76,7 +69,7 @@ def trainMLP(train_loader, val_loader):
     avg_train_loss = []
     avg_val_loss = []
     best_val_score = float('inf')
-    net = BaselineMLP()
+    net = MLP()
 
     loss_function = nn.CrossEntropyLoss(reduction='sum')
     optimizer = torch.optim.SGD(net.parameters(),lr=learning_rate)
@@ -118,38 +111,33 @@ def trainMLP(train_loader, val_loader):
             torch.save(net.state_dict(), mlp_results_path)
         i += 1
 
-    net = BaselineMLP()
+    net = MLP()
     net.load_state_dict(torch.load(mlp_results_path))
 
     return net, avg_train_loss, avg_val_loss
 
-def evaluate(loader, net):
+def get_accuracy(loader, net):
+    """
+    Loops through inputted dataloader and calculates accuracy between true values
+    and inputted net model's predictions
+    """
     total = 0
     correct = 0
-    # use model to get predictions
     for X, y in loader:
         outputs = net(X)
         predictions = torch.argmax(outputs.data, 1)
-
-        # total number of items in dataset
         total += y.shape[0]
-
-        # number of correctly labeled items in dataset
         correct += torch.sum(predictions == y)
-
-    # return fraction of correctly labeled items in dataset
     return float(correct) / float(total)
 
-# import pandas as pd
-# recipes = pd.read_csv('../../data/recipes_clean.csv')
-# ingredients = recipes.columns[3:]
-# X = recipes[ingredients]
-# y = recipes['type'].apply(lambda x:1 if x=='muffin' else 0)
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=234)
 def run_mlp(X_train, y_train, X_test, y_test):
+    """
+    Takes in training/testing data, trains mlp, prints accuracy score, plot t_losses
+    during training.
+    """
     train_loader, val_loader, test_loader = read_data(X_train, y_train, X_test, y_test)
-    net, t_losses, v_losses = trainMLP(train_loader,val_loader)
-    accuracy = evaluate(test_loader, net)
+    net, t_losses, v_losses = train_mlp(train_loader,val_loader)
+    accuracy = get_accuracy(test_loader, net)
     print("Test accuracy: {}".format(accuracy))
 
     # plot losses
@@ -160,5 +148,3 @@ def run_mlp(X_train, y_train, X_test, y_test):
     plt.ylabel("Loss")
     plt.title("Loss plot")
     plt.show()
-
-# run_mlp(X_train, y_train, X_test, y_test)
