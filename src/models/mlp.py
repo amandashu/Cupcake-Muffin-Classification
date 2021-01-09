@@ -1,5 +1,5 @@
 """
-Code modified from CSE151A course assignment.
+Code modified from machine learning course assignment.
 """
 
 import torch
