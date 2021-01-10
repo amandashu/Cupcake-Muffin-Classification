@@ -11,7 +11,7 @@ Example row of scraped data:
 ## Data Cleaning and Preparation
 See [here](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/src/data/clean.py) for the python functions that implement the cleaning as described below.
 
-Note many ingredients that are scraped are not common among all recipes (i.e pumpkin puree). I limit the ingredients to look at to only flour, baking powder (or baking soda), butter (or oil), sugar, egg, and vanilla,  and did a one hot encoding. In some cases column might contain a list of ingredient lines (i.e. when a recipe has both baking powder and baking soda). The first intermediary data frame looks like this:
+Note many ingredients that are scraped are not common among all recipes (i.e apple cider). I limit the ingredients to look at to only flour, baking powder (or baking soda), butter (or oil), sugar, egg, and vanilla,  and did a one hot encoding. In some cases rather than a string a column's values might be a list of ingredient lines (i.e. when a recipe has both baking powder and baking soda). The first intermediary data frame looks like this:
 
 | link | type | flour | baking powder/soda | butter/oil | sugar | egg | vanilla
 |------|------|------|------|------|------|------|------|
@@ -31,21 +31,15 @@ Here are example inputs and outputs to the cleaning function for flour.
 
 | Original String | Cleaned |
 |------|------|
-| ¾ cup sugar | 0.75|
 | 1½ cups all purpose flour | 1.5|
 | 1 1/2 cups all-purpose flour	| 1.5|
-| 1/2 cup brown sugar| 0.5 |
 | 3 cups all-purpose flour | 3|
 | 2-1/2 cups all-purpose flour | 2.5|
-| 1 and 1/2 cups (300g) granulated sugar, divided| 1.5|
-| 3 tablespoons flour | 0.1875|
 | 14 tbsp all purpose flour (1 cup minus 2 tbsp) | 0.875|
 | 1 cup plus 2 tablespoons flour | 1.125|
-| 2 tablespoons and 1 teaspoon white sugar | 0.1458333|
 | 1 cup + 2 tablespoons all-purpose flour | 1.125|
-| 1 cup + 2 tbsp sugar | 1.125
 
-**Baking Powder and Baking Soda**: The baking powder/soda column is converted to teaspoons of baking powder. In addition to #1, #3, and#5 listed under flour, here are other problems to consider:
+**Baking Powder and Baking Soda**: The baking powder/soda column is converted to teaspoons of baking powder. In addition to #1, #3, and #5 listed under flour, here are other problems to consider:
 
 1. Use of tablespoon measurement. These need to be converted (1 tablespoon = 3 teaspoons)
 2. Baking soda measurement is converted to baking powder (1/4 teaspoon baking soda = 1 teaspoon of baking powder)
@@ -130,7 +124,7 @@ The next intermediary data frame looks like this:
 |------|------|------|------|------|------|------|------|
 | https://www.thebakerchick.com/apple-cider-cupc... | cupcake | 1.5 | 2 | 0.5 | 0.667 | 2 | 1
 
-Since the recipes might produce a different number of cupcakes/muffins, rather than actual amounts of each ingredient, these numbers are converted to percentages (i.e. 40 in flour column indicates flour makes up 40% of all the ingredients). Note that a few columns are first converted to cups in order to make these calculation. A column for which blog the recipe comes from is also added.
+Since the recipes might produce a different number of cupcakes/muffins, rather than actual amounts of each ingredient, these numbers are converted to percentages (i.e. 40 in flour column indicates flour makes up 40% of all six ingredients). Note that a few columns are first converted to cups in order to make these calculation. The column `blog`, which describes which blog the recipe comes from, is also added.
 
 The final clean data frame, which is outputted to `/data/recipes_clean.csv`, looks like this:
 

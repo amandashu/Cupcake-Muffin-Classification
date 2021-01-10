@@ -124,11 +124,11 @@ def run_mlp(X_train, y_train, X_test, y_test, input_size, hidden_size, output_si
     net, t_losses = train_mlp(train_loader, input_size, hidden_size, output_size, learning_rate, epochs)
 
     # accuracy
-    accuracy = get_accuracy(test_loader, teal)
+    accuracy = get_accuracy(test_loader, net)
     print("Test accuracy: {}".format(accuracy))
 
     # plot losses
-    plt.plot(t_losses, , color='yellowgreen')
+    plt.plot(t_losses, color='teal')
     plt.xlabel("Iteration")
     plt.ylabel("Training Loss")
     plt.title("Training Loss plot")

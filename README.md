@@ -1,7 +1,7 @@
 ## Cupcake Muffin Classification
 Scraping, cleaning, and classifying cupcake and muffin recipes. This project is inspired by this [SVM tutorial](https://www.youtube.com/watch?v=N1vOgolbjSc&feature=youtu.be).
 
-Cupcakes and muffins may seem similar, but by comparing the ingredients of muffins and cupcakes from many online recipes, the data suggests otherwise. See my [analysis]((https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/reports/analysis.ipynb) in a Jupyter notebook.
+Cupcakes and muffins may seem similar, but by comparing the ingredients of muffins and cupcakes from many online recipes, the data suggests otherwise. See [Jupyter notebook](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/reports/analysis.ipynb) of my analysis.
 
 ## Data
 The data is scraped from baking blogs [Baking Bites](https://bakingbites.com/), [Sally's Baking Addition](https://sallysbakingaddiction.com/), and [The Baker Chick](https://www.thebakerchick.com/). See [here](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/reports/clean.md) for details on data preparation.
@@ -20,7 +20,7 @@ In the `/src/data` folder:
 - `clean.py`: contains functions that cleans data, as described in `reports/clean.md`. It outputs `recipes_clean.csv` to the data folder
 
 In the `src/utils` folder:
-- `remove.py`: contains function `remove_data` that implements the standard target `clean`
+- `remove.py`: contains function `remove_ouputs` that implements the standard target `clean`
 
 In the `src/models` folder:
 - `knn.py`: contains implementation of the k nearest neighbor algorithm

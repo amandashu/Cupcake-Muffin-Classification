@@ -4,13 +4,13 @@ import json
 sys.path.insert(0, 'src/data')
 sys.path.insert(0, 'src/utils')
 
-from remove import remove_data
+from remove import remove_ouputs
 from scrape import scrape_data
 from clean import clean_data
 
 def main(targets):
     if 'clean' in targets:
-        remove_data()
+        remove_ouputs()
         return
 
     if 'data' in targets:

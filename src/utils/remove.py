@@ -1,7 +1,7 @@
 import os
 import shutil
 
-def remove_data():
+def remove_ouputs():
     """
     Removes files specified in locations variable
     """
