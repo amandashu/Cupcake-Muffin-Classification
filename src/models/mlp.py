@@ -14,22 +14,20 @@ import os
 torch.manual_seed(0)
 np.random.seed(0)
 
-mlp_results_path = '../../results/model.pt'
-mlp_input_size = 6
-mlp_output_size = 2
-mlp_hidden_size1 = 8
-num_epochs = 700
-learning_rate = 0.0005
 batch_size = 30
 
 class MLP(nn.Module):
-    def __init__(self):
+    def __init__(self, input_size, hidden_size, output_size):
         """
         A multilayer perceptron model with one hidden layer
         """
         super(MLP, self).__init__()
-        self.fc1 = nn.Linear(mlp_input_size, mlp_hidden_size1)
-        self.fc2 = nn.Linear(mlp_hidden_size1, mlp_output_size)
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+
+        self.fc1 = nn.Linear(self.input_size, self.hidden_size)
+        self.fc2 = nn.Linear(self.hidden_size, self.output_size)
 
     def forward(self, X):
         """
@@ -51,105 +49,79 @@ def read_data(X_train, y_train, X_test, y_test):
     Takes in training/testing data. Training is further split to training and
     validation. Returns data loaders for training, validation, and testing.
     """
-    X_smalltrain, X_val, y_smalltrain, y_val = train_test_split(X_train, y_train, test_size=0.3, random_state=234)
-    training = utils.TensorDataset(convert_tensor(X_smalltrain), convert_tensor(y_smalltrain).long())
-    validation = utils.TensorDataset(convert_tensor(X_val), convert_tensor(y_val).long())
     testing = utils.TensorDataset(convert_tensor(X_test), convert_tensor(y_test).long())
+    training = utils.TensorDataset(convert_tensor(X_train), convert_tensor(y_train).long())
     train_dataloader = utils.DataLoader(training, batch_size=batch_size, shuffle=True)
-    val_dataloader = utils.DataLoader(validation, batch_size=batch_size, shuffle=True)
     test_dataloader = utils.DataLoader(testing, batch_size=batch_size, shuffle=True)
-    return train_dataloader, val_dataloader, test_dataloader
+    return train_dataloader, test_dataloader
 
 
-def train_mlp(train_loader, val_loader):
+def train_mlp(train_loader, input_size, hidden_size, output_size, learning_rate, epochs):
     """
-    Trains the mlp model, calculates the average training and validation loss at
-    each epochs,and returns the model parameters with the best validation loss to
-    a pickle file
+    Trains the mlp model, calculates the average training at each epochs, and
+    returns the final model and training losses
     """
     # create results folder if not yet exists
     dirname = '../../results'
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
-    # setup for training/validation losses
+    # list of training losses
     avg_train_loss = []
-    avg_val_loss = []
-    best_val_score = float('inf')
 
-    net = MLP()
-
-    # initialize loss function and optimizer
+    # initialize MLP, loss function, and optimizer
+    net = MLP(input_size, hidden_size, output_size)
     loss_function = nn.CrossEntropyLoss(reduction='sum')
     optimizer = torch.optim.SGD(net.parameters(),lr=learning_rate)
 
     i = 0
-    while i < num_epochs:
-        train_loss_list = []
-        val_loss_list = []
-
-        # for each training batch, update paramters
-        for k, (images, labels) in enumerate(train_loader):
+    while i < epochs:
+        # for each training batch, update parameters
+        for k, (recipes, type) in enumerate(train_loader):
             optimizer.zero_grad()
-            outputs = net(images)
-            loss = loss_function(outputs, labels)
+            outputs = net(recipes)
+            loss = loss_function(outputs, type)
 
             loss.backward()
             optimizer.step()
 
-        # calculate training and validation losses
+        # calculate training losses
+        train_loss_list = []
         with torch.no_grad():
-            for k, (images, labels) in enumerate(val_loader):
-                outputs = net(images)
-                loss = loss_function(outputs, labels)
-
-                val_loss_list.append(loss.item())
-
-            for k, (images, labels) in enumerate(train_loader):
-                outputs = net(images)
-                loss = loss_function(outputs, labels)
-
+            for k, (recipes, type) in enumerate(train_loader):
+                outputs = net(recipes)
+                loss = loss_function(outputs, type)
                 train_loss_list.append(loss.item())
 
-        # calculate average training/validation loss
+        # calculate average training loss
         avg_train = sum(train_loss_list)/len(train_loss_list)
-        avg_val = sum(val_loss_list)/len(val_loss_list)
         avg_train_loss.append(avg_train)
-        avg_val_loss.append(avg_val)
 
-        # save best model so far
-        if avg_val < best_val_score:
-            best_val_score = avg_val
-            torch.save(net.state_dict(), mlp_results_path)
         i += 1
+    return net, avg_train_loss
 
-    # return best model
-    net = MLP()
-    net.load_state_dict(torch.load(mlp_results_path))
-    return net, avg_train_loss, avg_val_loss
-
-def get_accuracy(loader, net):
+def get_accuracy(test_loader, net):
     """
     Loops through inputted dataloader and calculates accuracy between true values
     and inputted net model's predictions
     """
     total = 0
     correct = 0
-    for X, y in loader:
-        outputs = net(X)
-        predictions = torch.argmax(outputs.data, 1)
-        total += y.shape[0]
-        correct += torch.sum(predictions == y)
+    for ingredients, type in test_loader:
+        outputs = net(ingredients)
+        prediction = torch.argmax(outputs.data, 1)
+        total += type.shape[0]
+        correct += torch.sum(prediction == type)
     return float(correct) / float(total)
 
-def run_mlp(X_train, y_train, X_test, y_test):
+def run_mlp(X_train, y_train, X_test, y_test, input_size, hidden_size, output_size, learning_rate, epochs):
     """
-    Takes in training/testing data, trains mlp, prints accuracy score, plot t_losses
+    Takes in training/testing data, trains mlp, prints accuracy score, plot losses
     during training.
     """
     # train model
-    train_loader, val_loader, test_loader = read_data(X_train, y_train, X_test, y_test)
-    net, t_losses, v_losses = train_mlp(train_loader,val_loader)
+    train_loader, test_loader = read_data(X_train, y_train, X_test, y_test)
+    net, t_losses = train_mlp(train_loader, input_size, hidden_size, output_size, learning_rate, epochs)
 
     # accuracy
     accuracy = get_accuracy(test_loader, net)
@@ -157,9 +129,7 @@ def run_mlp(X_train, y_train, X_test, y_test):
 
     # plot losses
     plt.plot(t_losses)
-    plt.plot(v_losses)
-    plt.legend(["training_loss","validation_loss"])
     plt.xlabel("Iteration")
-    plt.ylabel("Loss")
-    plt.title("Loss plot")
+    plt.ylabel("Training Loss")
+    plt.title("Training Loss plot")
     plt.show()
