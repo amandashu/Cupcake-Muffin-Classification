@@ -5,15 +5,17 @@ Example row of scraped data:
 
 | link | type | ingredients
 |------|------|------|
-| https://sallysbakingaddiction.com/pumpkin-crum... | muffin | ['1 and 3/4 cups (220g) all-purpose flour (spoon & leveled)','1 teaspoon baking soda','2 teaspoons ground cinnamon','1 teaspoon pumpkin pie spice','1/2 teaspoon salt','1/2 cup (120ml) canola or vegetable oil','1/2 cup (100g) granulated sugar','1/2 cup (100g) packed light or dark brown sugar', '1 and 1/2 cups (340g) canned pumpkin puree','2 large eggs, at room temperature','1/4 cup (60ml) milk, at room temperature']
+| https://www.thebakerchick.com/apple-cider-cupc... | cupcake | ['½ cup unsalted butter, softened', '⅔ cup light brown sugar', '2 eggs, room temperature', '1 teaspoon vanilla extract', '1½ cups all purpose flour', '2 tsp baking powder', '¾ tsp salt', '1 tsp cinnamon', '¼ tsp nutmeg', '¾ cup fresh apple cider']
 
 
 ## Data Cleaning and Preparation
+See [here](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/src/data/clean.py) for the python functions that implement the cleaning as described below.
+
 Note many ingredients that are scraped are not common among all recipes (i.e pumpkin puree). I limit the ingredients to look at to only flour, baking powder (or baking soda), butter (or oil), sugar, egg, and vanilla,  and did a one hot encoding. In some cases column might contain a list of ingredient lines (i.e. when a recipe has both baking powder and baking soda). The first intermediary data frame looks like this:
 
 | link | type | flour | baking powder/soda | butter/oil | sugar | egg | vanilla
 |------|------|------|------|------|------|------|------|
-| https://www.thebakerchick.com/strawberry-lemon... | cupcake | 3 cups all-purpose flour | [1 tablespoon baking powder] | ['1 cup (2 sticks) unsalted butter, room temperature'] | [2 cups sugar] | 4 large eggs, room temperature | 1 teaspoon vanilla extract
+| https://www.thebakerchick.com/apple-cider-cupc... | cupcake | 1½ cups all purpose flour | [2 tsp baking powder] | [½ cup unsalted butter, softened] | [⅔ cup light brown sugar] | 2 eggs, room temperature | 1 teaspoon vanilla extract
 
 The next step is to clean each column from strings/lists to a single float value representing how much of a ingredient is in that recipe (i.e. 2 in flour column means 2 cups of flour). As with most text data written by humans, there are many things to consider when cleaning these ingredient columns.
 
@@ -23,6 +25,7 @@ The next step is to clean each column from strings/lists to a single float value
 2. Use of tablespoon or teaspoon measurement instead of cups. These need to be converted (1 tablespoon = 0.0625 cups, 1 teaspoon = 0.0208333 cups)
 3. Use of abbreviations versus full names. (i.e. tbsp vs tablespoon, tsp vs teaspoon)
 4. When using multiple types of measurements, using different conjunctions. (i.e. plus, +, and)
+5. Nans values should become 0
 
 Here are example inputs and outputs to the cleaning function for flour.
 
@@ -42,7 +45,7 @@ Here are example inputs and outputs to the cleaning function for flour.
 | 1 cup + 2 tablespoons all-purpose flour | 1.125|
 | 1 cup + 2 tbsp sugar | 1.125
 
-**Baking Powder and Baking Soda**: The baking powder/soda column is converted to teaspoons of baking powder. In addition to #1 and #3 listed under flour, here are other problems to consider:
+**Baking Powder and Baking Soda**: The baking powder/soda column is converted to teaspoons of baking powder. In addition to #1, #3, and#5 listed under flour, here are other problems to consider:
 
 1. Use of tablespoon measurement. These need to be converted (1 tablespoon = 3 teaspoons)
 2. Baking soda measurement is converted to baking powder (1/4 teaspoon baking soda = 1 teaspoon of baking powder)
@@ -61,7 +64,7 @@ Here are example inputs and outputs to the cleaning function for flour.
 | \['1 1/2 teaspoons baking soda', '3/4 teaspoon baking powder'\] |6.75 |
 | \['1 ½ tsp. baking powder', '¼ tsp. baking soda'\] | 2.5|
 
-**Oil and Butter**: The oil/butter column is converted to cups of butter. In addition to #1 and #3 listed under flour, here are other problems to consider:
+**Oil and Butter**: The oil/butter column is converted to cups of butter. In addition to #1, #3, and #5 listed under flour, here are other problems to consider:
 
 1. Use of measurements such as sticks, ounces, or tablespoons instead of cups. These need to be converted (1 cup butter = 2 sticks butter, 1 cup butter = 16 tablespoons butter or oil, 1 cup butter = 8 ounces butter).
 2. Oil is converted to butter equivalent (use 3/4 amount of oil for butter)
@@ -77,7 +80,7 @@ Here are example inputs and outputs to the cleaning function for flour.
 |\[8 ounces (2 sticks) unsalted butter, softened\]|1|
 | \['3 tablespoons canola/vegetable oil', '2 sticks unsalted butter- softened'\]| 1.25 |
 
-**Sugar**: The sugar column is also converted to cups. In addition to #1 - #3 listed under flour, other thing to consider are:
+**Sugar**: The sugar column is also converted to cups. In addition to #1 - #3 and #5 listed under flour, other thing to consider are:
 1. Use of sugar substitutes such as honey or syrup. These are converted with 1 to 1 ratio.
 2. Having optional ingredients. These are not included
 
@@ -91,7 +94,7 @@ Here are example inputs and outputs to the cleaning function for flour.
 | \['1/4 cup honey or pure maple syrup', '1/2 cup light or dark brown sugar, loosely packed'\] | 0.75 |
 | \['1/3 cup (80ml) pure maple syrup', 'optional: 3 tablespoons oats and coconut sugar for sprinkling'\] | 0.333
 
-**Egg**: The eggs column is converted to number of eggs. Here are things to consider:
+**Egg**: The eggs column is converted to number of eggs. In addition to #5 listed under flour, here are things to consider:
 
 1. Use of tablespoon or cup measurement. These need to be converted (1 cup = 4 eggs, 1 teaspoon = 0.25 egg)
 2. Use of 'or'
@@ -104,7 +107,7 @@ Here are example inputs and outputs to the cleaning function for flour.
 | 2 large egg whites or 1 large egg| 1|
 | 2 tbsp egg (1/2 large, beaten egg)| 0.5|
 
-**Vanilla**: The vanilla column is converted to teaspoons of vanilla extract. In addition to #1 and #3 listed under flour and #1 listed under baking powder/soda, another problem to consider is:
+**Vanilla**: The vanilla column is converted to teaspoons of vanilla extract. In addition to #1, #3, and #5 listed under flour and #1 listed under baking powder/soda, another problem to consider is:
 
 1. Use of vanilla bean instead of extract. These need to be converted (1 vanilla bean = 1 teaspoon extract)
 
@@ -115,7 +118,7 @@ Here are example inputs and outputs to the cleaning function for flour.
 | 1/8 teaspoon of vanilla extract| 0.128|
 | 1 1/2 tsp vanilla extract	| 1.5 |
 | 2 and 1/2 teaspoons pure vanilla extract| 2.5|
-| 2 tsp vanilla extract or vanilla bean paste | 2|
+| 2 tsp vanilla extract or vanilla bean paste | 2|s
 | 1 tbsp vanilla extract | 3|
 | 2 tablespoons pure vanilla extract| 6|
 | 1 vanilla bean, split lengthwise | 1|
@@ -125,7 +128,7 @@ The next intermediary data frame looks like this:
 
 | link | type | Flour (cups) | Baking Powder (tsp) | Butter (cups) | Sugar (cups) | Eggs | Vanilla (tsp)
 |------|------|------|------|------|------|------|------|
-| https://www.thebakerchick.com/strawberry-lemon... | cupcake | 3 | 3 | 1 | 2 | 4 | 1
+| https://www.thebakerchick.com/apple-cider-cupc... | cupcake | 1.5 | 2 | 0.5 | 0.667 | 2 | 1
 
 Since the recipes might produce a different number of cupcakes/muffins, rather than actual amounts of each ingredient, these numbers are converted to percentages (i.e. 40 in flour column indicates flour makes up 40% of all the ingredients). Note that a few columns are first converted to cups in order to make these calculation. A column for which blog the recipe comes from is also added.
 
@@ -133,7 +136,7 @@ The final clean data frame, which is outputted to `/data/recipes_clean.csv`, loo
 
 | link | blog | type | Flour (%) | Baking Powder (%) | Butter (%) | Sugar (%) | Eggs (%) | Vanilla (%)
 |------|------|------|------|------|------|------|------|------|
-| https://www.thebakerchick.com/strawberry-lemon... | The Baker Chick | cupcake | 42.352941	 | 0.882353 | 14.117647	| 28.235294	| 14.117647	| 0.294118
+| https://www.thebakerchick.com/apple-cider-cupc... | The Baker Chick | cupcake | 46.451613	 | 1.290323 | 15.483871 | 20.645161 | 15.483871 | 0.645161
 
 ## Notes
 It is possible that there are cases where not all the intended ingredients were scraped or partially scraped, since the scraping script makes assumptions about the structure of each webpage and there may be outlier pages that do not conform. The only recipes that were dropped from the data are recipes with no flour, as they may link to another recipe for the cake or use non traditional ingredients like wafers or oats.

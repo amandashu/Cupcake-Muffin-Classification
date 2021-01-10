@@ -46,8 +46,8 @@ def convert_tensor(pd_df):
 
 def read_data(X_train, y_train, X_test, y_test):
     """
-    Takes in training/testing data. Training is further split to training and
-    validation. Returns data loaders for training, validation, and testing.
+    Takes in training/testing data and returns data loaders their respective
+    data loaders.
     """
     testing = utils.TensorDataset(convert_tensor(X_test), convert_tensor(y_test).long())
     training = utils.TensorDataset(convert_tensor(X_train), convert_tensor(y_train).long())
@@ -124,11 +124,11 @@ def run_mlp(X_train, y_train, X_test, y_test, input_size, hidden_size, output_si
     net, t_losses = train_mlp(train_loader, input_size, hidden_size, output_size, learning_rate, epochs)
 
     # accuracy
-    accuracy = get_accuracy(test_loader, net)
+    accuracy = get_accuracy(test_loader, teal)
     print("Test accuracy: {}".format(accuracy))
 
     # plot losses
-    plt.plot(t_losses)
+    plt.plot(t_losses, , color='yellowgreen')
     plt.xlabel("Iteration")
     plt.ylabel("Training Loss")
     plt.title("Training Loss plot")

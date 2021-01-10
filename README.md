@@ -1,7 +1,7 @@
 ## Cupcake Muffin Classification
 Scraping, cleaning, and classifying cupcake and muffin recipes. This project is inspired by this [SVM tutorial](https://www.youtube.com/watch?v=N1vOgolbjSc&feature=youtu.be).
 
-Cupcakes and muffins may seem similar, but by comparing the ingredients of muffins and cupcakes from many online recipes, the data suggests otherwise. See [here](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/reports/analysis.ipynb) for analysis in a Jupyter notebook.
+Cupcakes and muffins may seem similar, but by comparing the ingredients of muffins and cupcakes from many online recipes, the data suggests otherwise. See my [analysis]((https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/reports/analysis.ipynb) in a Jupyter notebook.
 
 ## Data
 The data is scraped from baking blogs [Baking Bites](https://bakingbites.com/), [Sally's Baking Addition](https://sallysbakingaddiction.com/), and [The Baker Chick](https://www.thebakerchick.com/). See [here](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/reports/clean.md) for details on data preparation.
@@ -24,7 +24,7 @@ In the `src/utils` folder:
 
 In the `src/models` folder:
 - `knn.py`: contains implementation of the k nearest neighbor algorithm
-- `mlp.py`: contains implementation of multilayer perception classifier. After training MLP, the best model parameters are saved into `/results/model.pt`.
+- `mlp.py`: contains implementation of multilayer perception classifier. After training MLP, the final model parameters are saved into `/results/model.pt`.
 
 ## Run the Results
 To get the cleaned data, run the below command. This will run the webscraping and cleaning, while the targets `data-scrape` and `data-clean` will do each respectively.
@@ -35,7 +35,7 @@ python run.py data
 Note: To run the webscraping, this assumes that there is a file `/config/chromedriver.json` that specifies where the path to the downloaded chromedriver.exe file for your Chrome version lies. It might look like this:
 ```console
 {
-  "chromedriver_path" : "C:/Users/JohnDoe/Downloads/chromedriver_win32/chromedriver.exe"
+  "chromedriver_path" : "C:/Users/JohnDoe/Documents/chromedriver.exe"
 }
 ```
 
