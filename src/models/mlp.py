@@ -129,7 +129,7 @@ def run_mlp(X_train, y_train, X_test, y_test, input_size, hidden_size, output_si
 
     # plot losses
     plt.plot(t_losses, color='teal')
-    plt.xlabel("Iteration")
+    plt.xlabel("Epoch")
     plt.ylabel("Training Loss")
     plt.title("Training Loss plot")
     plt.show()

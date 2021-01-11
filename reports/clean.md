@@ -1,5 +1,5 @@
 ## Data Collection
-The data is scraped from baking blogs [Baking Bites](https://bakingbites.com/), [Sally's Baking Addition](https://sallysbakingaddiction.com/), and [The Baker Chick](https://www.thebakerchick.com/), implemented in this [file](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/src/data/scrape.py). It scrapes both cupcake and muffin recipes from these sites into `/data/recipes.csv`, which is a csv file containing columns `link`, `type` (cupcake or muffin), and `ingredients` (list of each ingredient line). When possible, only the main part of the recipe is scraped (i.e. the cake portion of cupcakes and not the frosting).
+The data is scraped from baking blogs [Baking Bites](https://bakingbites.com/), [Sally's Baking Addition](https://sallysbakingaddiction.com/), and [The Baker Chick](https://www.thebakerchick.com/), implemented in this [file](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/src/data/scrape.py). It scrapes both cupcake and muffin recipes from these sites into `/data/recipes.csv`, which is a csv file containing columns `link`, `type` (cupcake or muffin), and `ingredients` (list of each ingredient line/bullet point). When possible, only the main part of the recipe is scraped (i.e. the cake portion of cupcakes and not the frosting).
 
 Example row of scraped data:
 
@@ -11,7 +11,7 @@ Example row of scraped data:
 ## Data Cleaning and Preparation
 See [here](https://github.com/amandashu/Cupcake-Muffin-Classification/blob/main/src/data/clean.py) for the python functions that implement the cleaning as described below.
 
-Note many ingredients that are scraped are not common among all recipes (i.e apple cider). I limit the ingredients to look at to only flour, baking powder (or baking soda), butter (or oil), sugar, egg, and vanilla,  and did a one hot encoding. In some cases rather than a string a column's values might be a list of ingredient lines (i.e. when a recipe has both baking powder and baking soda). The first intermediary data frame looks like this:
+Note many ingredients that are scraped are not common among all recipes (i.e apple cider). I limit the ingredients to look at to only flour, baking powder (or baking soda), butter (or oil), sugar, egg, and vanilla,  and did a one hot encoding. I make the assumption that baking powder/baking soda, butter/oil, and sugar/sugar substitutes serve the same purpose in the recipes, and will later convert baking soda to its baking powder equivalent amount, oil to butter, and sugar substitutes to sugar. In some cases rather than a string a column's values might be a list of ingredient lines/bullet points (i.e. to account for cases where a recipe has both baking powder and baking soda). The first intermediary data frame looks like this:
 
 | link | type | flour | baking powder/soda | butter/oil | sugar | egg | vanilla
 |------|------|------|------|------|------|------|------|
